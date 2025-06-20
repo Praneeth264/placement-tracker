@@ -1,9 +1,11 @@
-// Request notification permission
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
+// ✅ Ask once and alert if denied
+Notification.requestPermission().then(permission => {
+  if (permission !== "granted") {
+    alert("Please allow notifications to receive goal deadline alerts.");
+  }
+});
 
-// Check every 10 seconds (for testing — increase to 60000 for 1 min in production)
+// ✅ Check every 10 seconds (testing) — use 60000 (1 min) in production
 setInterval(() => {
   checkGoalReminders();
 }, 10000);
@@ -74,8 +76,6 @@ function checkGoalReminders() {
     localStorage.setItem("allGoals", JSON.stringify(allGoals));
   }
 }
-
-
 
 // ✅ Notification popup + sound + tab flash
 function sendNotification(message) {
