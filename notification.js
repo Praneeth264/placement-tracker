@@ -1,16 +1,21 @@
-// ✅ Ask once and alert if denied
-Notification.requestPermission().then(permission => {
-  if (permission !== "granted") {
-    alert("Please allow notifications to receive goal deadline alerts.");
-  }
-});
+/* ── Notification permission handling ───────────────────────────── */
 
-// ✅ Check every 10 seconds (testing) — use 60000 (1 min) in production
-setInterval(() => {
-  checkGoalReminders();
-}, 10000);
+// First‑time visitors → ask; if denied, alert.
+// If previously denied, show alert immediately.
+if (Notification.permission === "default") {
+  Notification.requestPermission().then(permission => {
+    if (permission !== "granted") {
+      alert("Please allow notifications in your browser to receive deadline alerts.");
+    }
+  });
+} else if (Notification.permission === "denied") {
+  alert("🔕 Notifications are blocked. Please enable them in your browser settings.");
+}
 
-// ✅ Reminder Logic
+/* ── Periodic reminder check ───────────────────────────────────── */
+
+setInterval(checkGoalReminders, 10000); // 10 s for testing; use 60000 in production
+
 function checkGoalReminders() {
   const currentUser = JSON.parse(localStorage.getItem("loggedInUser"))?.email;
   if (!currentUser) {
@@ -18,34 +23,31 @@ function checkGoalReminders() {
     return;
   }
 
-  let allGoals = JSON.parse(localStorage.getItem("allGoals")) || {};
-  let goals = allGoals[currentUser] || [];
+  const allGoals = JSON.parse(localStorage.getItem("allGoals")) || {};
+  const goals = allGoals[currentUser] || [];
 
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0); // Normalize to midnight
-
-  console.log("📅 Today:", now.toLocaleDateString("en-GB"));
-  console.log("🔔 Checking for goals due on:", tomorrow.toDateString());
+  tomorrow.setHours(0, 0, 0, 0); // midnight tomorrow
 
   let updated = false;
 
-  goals.forEach((goal, index) => {
+  goals.forEach((goal, idx) => {
     if (!goal.deadline || goal.completed || goal.notified) return;
 
     let goalDate;
 
-    // Parse both formats
+    // Accept dd‑mm‑yyyy or yyyy‑mm‑dd
     if (goal.deadline.includes("-")) {
       const parts = goal.deadline.trim().split("-");
       if (parts.length === 3) {
         if (parts[0].length === 4) {
-          // yyyy-mm-dd
+          // yyyy‑mm‑dd
           const [yyyy, mm, dd] = parts;
           goalDate = new Date(`${yyyy}-${mm}-${dd}`);
         } else {
-          // dd-mm-yyyy
+          // dd‑mm‑yyyy
           const [dd, mm, yyyy] = parts;
           goalDate = new Date(`${yyyy}-${mm}-${dd}`);
         }
@@ -54,30 +56,26 @@ function checkGoalReminders() {
     }
 
     if (!goalDate || isNaN(goalDate)) {
-      console.log(`⚠️ Invalid deadline format for "${goal.title}":`, goal.deadline);
+      console.log(`⚠️ Invalid deadline for "${goal.title}":`, goal.deadline);
       return;
     }
 
-    console.log(`⏳ Comparing: ${goalDate.toDateString()} === ${tomorrow.toDateString()}`);
-
     if (goalDate.toDateString() === tomorrow.toDateString()) {
-      console.log("✅ MATCH - Sending Notification for:", goal.title);
+      console.log("🔔 Sending notification for:", goal.title);
       sendNotification(`⏰ Reminder: "${goal.title}" is due tomorrow!`);
-      goals[index].notified = true;
+      goals[idx].notified = true;
       updated = true;
-    } else {
-      console.log(`❌ No match for "${goal.title}"`);
     }
   });
 
-  // Update localStorage with notified flag if needed
   if (updated) {
     allGoals[currentUser] = goals;
     localStorage.setItem("allGoals", JSON.stringify(allGoals));
   }
 }
 
-// ✅ Notification popup + sound + tab flash
+/* ── Notification helper ───────────────────────────────────────── */
+
 function sendNotification(message) {
   if (Notification.permission === "granted") {
     new Notification("Goal Reminder", { body: message });
@@ -89,16 +87,19 @@ function sendNotification(message) {
   flashTitle(message);
 }
 
-// ✅ Flash tab title
+/* ── Flash tab title helper ────────────────────────────────────── */
+
 let originalTitle = document.title;
 let flashing = false;
 
 function flashTitle(message) {
   if (flashing) return;
   flashing = true;
+
   const interval = setInterval(() => {
     document.title = document.title === originalTitle ? message : originalTitle;
   }, 800);
+
   setTimeout(() => {
     clearInterval(interval);
     document.title = originalTitle;
@@ -106,4 +107,5 @@ function flashTitle(message) {
   }, 10000);
 }
 
+/* expose for manual testing */
 window.sendNotification = sendNotification;
