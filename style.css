@@ -19,3 +19,24 @@ input, button {
 h1 {
     text-align: center;
 }
+#mobileNotificationWarning {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff3cd;
+    color: #856404;
+    font-size: 0.85em;
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #ffeeba;
+    z-index: 9999;
+}
+
+/* Show only on mobile */
+@media only screen and (max-width: 600px) {
+    #mobileNotificationWarning {
+        display: block;
+    }
+}
