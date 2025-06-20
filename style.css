@@ -23,26 +23,4 @@ h1 {
     text-align: center;
 }
 
-#mobileNotificationWarning {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fff3cd;
-    color: #856404;
-    padding: 12px 16px;
-    border: 1px solid #ffeeba;
-    border-radius: 8px;
-    font-size: 0.9em;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
-    z-index: 9999;
-}
-
-@media only screen and (max-width: 600px) {
-    #mobileNotificationWarning {
-        display: block;
-    }
-}
 
