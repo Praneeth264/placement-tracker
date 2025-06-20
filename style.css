@@ -3,7 +3,6 @@ body {
     background: #f0f0f0;
     padding: 20px;
 }
-
 .login-box {
     background: white;
     padding: 20px;
@@ -11,38 +10,37 @@ body {
     width: 300px;
     margin: auto;
 }
-
 input, button {
     display: block;
     margin: 10px 0;
     padding: 10px;
     width: 100%;
 }
-
 h1 {
     text-align: center;
 }
-
-/* ✅ Mobile notification warning fixed at bottom */
 #mobileNotificationWarning {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #fff3cd;
-    color: #856404;
-    font-size: 0.85em;
-    padding: 10px;
-    text-align: center;
-    border-top: 1px solid #ffeeba;
-    z-index: 9999;
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: #fff8dc;
+  color: #444;
+  font-size: 0.8em;
+  padding: 10px 12px;
+  border-left: 4px solid #ff9800;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-width: 250px;
+    padding-left: 20px;
 }
 
-/* ✅ Show only on mobile screens */
+/* Show only on small/mobile screens */
 @media only screen and (max-width: 600px) {
-    #mobileNotificationWarning {
-        display: block;
-    }
+  #mobileNotificationWarning {
+    display: block;
+  }
 }
+replace and give me
 
