@@ -1,7 +1,5 @@
 /* ── Notification permission handling ───────────────────────────── */
-
-// First‑time visitors → ask; if denied, alert.
-// If previously denied, show alert immediately.
+// ✅ Notification permission handling with clickable help
 if (Notification.permission === "default") {
   Notification.requestPermission().then(permission => {
     if (permission !== "granted") {
@@ -9,8 +7,29 @@ if (Notification.permission === "default") {
     }
   });
 } else if (Notification.permission === "denied") {
-  alert("🔕 Notifications are blocked. Please enable them in your browser settings.");
+  // Create an alert-like div with a help button
+  const notifDiv = document.createElement("div");
+  notifDiv.style.position = "fixed";
+  notifDiv.style.bottom = "20px";
+  notifDiv.style.right = "20px";
+  notifDiv.style.padding = "15px";
+  notifDiv.style.backgroundColor = "#ffdddd";
+  notifDiv.style.border = "1px solid red";
+  notifDiv.style.borderRadius = "8px";
+  notifDiv.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  notifDiv.innerHTML = `
+    🔕 <strong>Notifications are blocked.</strong><br>
+    Please enable them in your browser settings.<br><br>
+    <button id="openSettingsBtn">Click here to fix</button>
+  `;
+  document.body.appendChild(notifDiv);
+
+  document.getElementById("openSettingsBtn").onclick = () => {
+    alert("To enable notifications:\n\n🔐 Click the lock 🔒 icon in the address bar.\n✅ Allow Notifications.");
+    notifDiv.remove();
+  };
 }
+
 
 /* ── Periodic reminder check ───────────────────────────────────── */
 
